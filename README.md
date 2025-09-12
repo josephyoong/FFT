@@ -13,4 +13,3 @@ Numbers are represented in Q-format to represent signed and fractional numbers. 
 4. The control cycles through new pairs of addresses to complete the FFT.
 
 ## Testbench
-The current testbench loads a constant, real, 8-point signal of 1 to memory. After FFT completion, the result is a spike of magnitude 8 at the DC frequency (0).
