@@ -41,18 +41,24 @@ module testbench();
     enable = 1;
     mem0_load = 1;
     mem1_load = 0;
-    mem0_external_load1_real = 16'h0100;
     mem0_external_load1_imag = 16'h0000;
-    mem0_external_load2_real = 16'h0100;
     mem0_external_load2_imag = 16'h0000;
     
     #10
+    mem0_external_load1_real = 16'h0100; // addr 0
+    mem0_external_load2_real = 16'hFFA5; // addr 1
     
     #10
+    mem0_external_load1_real = 16'hFF80; // addr 2
+    mem0_external_load2_real = 16'h005A; // addr 3
     
     #10
+    mem0_external_load1_real = 16'h0000; // addr 4
+    mem0_external_load2_real = 16'h005A; // addr 5
     
     #10
+    mem0_external_load1_real = 16'hFF80; // addr 6
+    mem0_external_load2_real = 16'hFFA5; // addr 7
     mem0_load = 0;
     go = 1;
     
