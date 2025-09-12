@@ -13,3 +13,5 @@ Numbers are represented in Q-format to represent signed and fractional numbers. 
 4. The control cycles through new pairs of addresses to complete the FFT.
 
 ## Testbench
+
+The input signal is a superposition of two cos waves with distinct frequencies, so we would expect the output FFT to have energy at two distinct frequencies. The results of the testbench confirms this.
