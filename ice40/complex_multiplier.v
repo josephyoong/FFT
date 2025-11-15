@@ -59,14 +59,14 @@ always @(posedge clk) begin
         prod4 <= i_data1_im * i_data2_im; // bd
 
         // 2nd clk edge (data flow)
-        prod1_rnd <= (prod1 + (1<<(F-1)))[2*(I+F)-1-I:F];
-        prod2_rnd <= (prod2 + (1<<(F-1)))[2*(I+F)-1-I:F];
-        prod3_rnd <= (prod3 + (1<<(F-1)))[2*(I+F)-1-I:F];
-        prod4_rnd <= (prod4 + (1<<(F-1)))[2*(I+F)-1-I:F];
+        prod1_rnd <= (prod1 + (1<<(F-1)));
+        prod2_rnd <= (prod2 + (1<<(F-1)));
+        prod3_rnd <= (prod3 + (1<<(F-1)));
+        prod4_rnd <= (prod4 + (1<<(F-1)));
 
         // 3rd clk edge (data flow)
-        o_data_re <= prod1_rnd - prod4_rnd; // ac - bd
-        o_data_im <= prod2_rnd + prod3_rnd; // ad + bc
+        o_data_re <= prod1_rnd[2*(I+F)-1-I:F] - prod4_rnd[2*(I+F)-1-I:F]; // ac - bd
+        o_data_im <= prod2_rnd[2*(I+F)-1-I:F] + prod3_rnd[2*(I+F)-1-I:F]; // ad + bc
     end
 end
 

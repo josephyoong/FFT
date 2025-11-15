@@ -10,6 +10,8 @@ Butterfly
               ,|=|.
              ((/^\))
 
+4 clk edges
+
 top = even + (twiddle * odd)
 bottom = even - (twiddle * odd)
 

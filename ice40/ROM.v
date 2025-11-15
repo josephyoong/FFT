@@ -11,10 +11,10 @@ module ROM #(
     input clk,
 
     input i_rd_en,
-    input [$clog2(N)-1:0] i_rd_addr,
+    input [$clog2(N/2)-1:0] i_rd_addr,
 
-    output [I+F-1:0] o_rd_data_re,
-    output [I+F-1:0] o_rd_data_im
+    output reg [I+F-1:0] o_rd_data_re,
+    output reg [I+F-1:0] o_rd_data_im
 );
 
 reg [I+F-1:0] r_mem_re [0:(N/2)-1];
