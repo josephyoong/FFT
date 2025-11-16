@@ -1,1 +1,1 @@
-# Fast Fourier Transform on FPGA, Verilog.  
+# Fast Fourier Transform on an ice40 FPGA 
