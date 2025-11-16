@@ -1,27 +1,40 @@
-/*
-Top
-
-hello
-
-*/
-
-module top #(
-    parameter
-    N,
-    I,
-    F
-) (
-    input clk,
-    input rst,
-    input load,
-    input transform,
-    input read,
-    input [I+F-1:0] load_data_RAM1_re,
-    input [I+F-1:0] load_data_RAM1_im,
-    input [I+F-1:0] load_data_RAM2_re,
-    input [I+F-1:0] load_data_RAM2_im
+module top (
+    clk,
+    rst,
+    load,
+    transform,
+    read,
+    load_data_RAM1_re,
+    load_data_RAM1_im,
+    load_data_RAM2_re,
+    load_data_RAM2_im,
+    done_transform
 );
 
+// Parameters
+parameter N = 8;
+parameter I = 4;
+parameter F = 4;
+
+// Inputs
+input clk;
+input rst;
+input load;
+input transform;
+input read;
+input [I+F-1:0] load_data_RAM1_re;
+input [I+F-1:0] load_data_RAM1_im;
+input [I+F-1:0] load_data_RAM2_re;
+input [I+F-1:0] load_data_RAM2_im;
+
+// Outputs
+output done_transform;
+
+// Local parameters for address widths
+localparam ADDR_WIDTH = log2(N);
+localparam ROM_ADDR_WIDTH = log2(N/2);
+
+// Wires
 wire RAM1_re_wr_en;
 wire RAM1_im_wr_en;
 wire RAM2_re_wr_en;
@@ -31,15 +44,16 @@ wire RAM1_im_rd_en;
 wire RAM2_re_rd_en;
 wire RAM2_im_rd_en;
 wire ROM_rd_en;
-wire [$clog2(N)-1:0] RAM1_re_wr_addr;
-wire [$clog2(N)-1:0] RAM1_im_wr_addr;
-wire [$clog2(N)-1:0] RAM2_re_wr_addr;
-wire [$clog2(N)-1:0] RAM2_im_wr_addr;
-wire [$clog2(N)-1:0] RAM1_re_rd_addr;
-wire [$clog2(N)-1:0] RAM1_im_rd_addr;
-wire [$clog2(N)-1:0] RAM2_re_rd_addr;
-wire [$clog2(N)-1:0] RAM2_im_rd_addr;
-wire [$clog2(N/2)-1:0] ROM_rd_addr;
+wire [ADDR_WIDTH-1:0] RAM1_re_wr_addr;
+wire [ADDR_WIDTH-1:0] RAM1_im_wr_addr;
+wire [ADDR_WIDTH-1:0] RAM2_re_wr_addr;
+wire [ADDR_WIDTH-1:0] RAM2_im_wr_addr;
+wire [ADDR_WIDTH-1:0] RAM1_re_rd_addr;
+wire [ADDR_WIDTH-1:0] RAM1_im_rd_addr;
+wire [ADDR_WIDTH-1:0] RAM2_re_rd_addr;
+wire [ADDR_WIDTH-1:0] RAM2_im_rd_addr;
+// wire [ROM_ADDR_WIDTH-1:0] ROM_rd_addr;
+wire [ADDR_WIDTH-1:0] ROM_rd_addr;
 wire [I+F-1:0] top_re;
 wire [I+F-1:0] top_im;
 wire [I+F-1:0] bot_re;
@@ -59,7 +73,8 @@ wire [I+F-1:0] odd_im;
 wire [I+F-1:0] twi_re;
 wire [I+F-1:0] twi_im;
 
-memory #(.N(N), .I(I), .F(F)) top_memory (
+// Instantiate memory module
+(* syn_noprune *) memory top_memory (
     .clk(clk),
     .rst(rst),
 
@@ -106,11 +121,12 @@ memory #(.N(N), .I(I), .F(F)) top_memory (
     .o_twi_im(twi_im)
 );
 
-butterfly #(.I(I), .F(F)) top_butterfly (
+// Instantiate butterfly module
+(* syn_noprune *) butterfly top_butterfly (
     .clk(clk),
     .rst(rst),
 
-    .i_en(),
+    .i_en(1'b1),  // You had this unconnected - added a default value
     .i_even_re(even_re),
     .i_even_im(even_im),
     .i_odd_re(odd_re),
@@ -124,7 +140,8 @@ butterfly #(.I(I), .F(F)) top_butterfly (
     .o_bot_im(bot_im)
 );
 
-control #(.N(N), .I(I), .F(F)) top_control (
+// Instantiate control module
+(* syn_noprune *) control top_control (
     .clk(clk),
     .rst(rst),
 
@@ -159,7 +176,18 @@ control #(.N(N), .I(I), .F(F)) top_control (
     .o_ctrl_data_re(ctrl_data_re),      
     .o_ctrl_data_im(ctrl_data_im),      
     .o_ctrl_even_odd_re(ctrl_even_odd_re),      
-    .o_ctrl_even_odd_im(ctrl_even_odd_im)
+    .o_ctrl_even_odd_im(ctrl_even_odd_im),
+    .o_done_transform(done_transform)
 );
+
+// Custom log2 function to replace $clog2
+function integer log2;
+    input integer value;
+    begin
+        value = value - 1;
+        for (log2 = 0; value > 0; log2 = log2 + 1)
+            value = value >> 1;
+    end
+endfunction
     
 endmodule

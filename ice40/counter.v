@@ -4,19 +4,22 @@ Counter
 
 */
 
-module counter #(
-    parameter
-    WIDTH,
-    MAX
-) (
-    input clk,
-    input rst,
-
-    input i_en,
-
-    output reg [WIDTH-1:0] o_count,
-    output max
+module counter (
+    clk,
+    rst,
+    i_en,
+    o_count,
+    max
 );
+
+parameter WIDTH = 8;
+parameter MAX = 255;
+
+input clk;
+input rst;
+input i_en;
+output reg [WIDTH-1:0] o_count;
+output max;
 
 always @(posedge clk) begin
     if (rst) begin

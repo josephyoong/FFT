@@ -10,22 +10,31 @@ QI.F Format
 
 */
 
-module complex_multiplier #(
-    parameter I,
-    parameter F
-) (
-    input clk,
-    input rst,
-
-    input i_en,
-    input [I+F-1:0] i_data1_re,
-    input [I+F-1:0] i_data1_im,
-    input [I+F-1:0] i_data2_re,
-    input [I+F-1:0] i_data2_im,
-
-    output reg [I+F-1:0] o_data_re,
-    output reg [I+F-1:0] o_data_im
+module complex_multiplier ( 
+    clk, 
+    rst, 
+    i_en, 
+    i_data1_re, 
+    i_data1_im, 
+    i_data2_re, 
+    i_data2_im, 
+    o_data_re, 
+    o_data_im 
 );
+
+parameter N = 8;
+parameter I = 4; 
+parameter F = 4;
+
+input clk;
+input rst;
+input i_en;
+input [I+F-1:0] i_data1_re;
+input [I+F-1:0] i_data1_im;
+input [I+F-1:0] i_data2_re;
+input [I+F-1:0] i_data2_im;
+output reg [I+F-1:0] o_data_re;
+output reg [I+F-1:0] o_data_im;
 
 reg [2*(I+F)-1:0] prod1;
 reg [2*(I+F)-1:0] prod2;
@@ -42,31 +51,25 @@ always @(posedge clk) begin
         prod2 <= 0;
         prod3 <= 0;
         prod4 <= 0;
-
         prod1_rnd <= 0;
         prod2_rnd <= 0;
         prod3_rnd <= 0;
         prod4_rnd <= 0;
-
         o_data_re <= 0;
         o_data_im <= 0;
-    end
-    else if (i_en) begin
-        // 1st clk edge (data flow) - can reduce multiplier size since mult by <1
-        prod1 <= i_data1_re * i_data2_re; // ac 
-        prod2 <= i_data1_re * i_data2_im; // ad
-        prod3 <= i_data1_im * i_data2_re; // bc
-        prod4 <= i_data1_im * i_data2_im; // bd
+    end else if (i_en) begin
+        prod1 <= i_data1_re * i_data2_re;
+        prod2 <= i_data1_re * i_data2_im;
+        prod3 <= i_data1_im * i_data2_re;
+        prod4 <= i_data1_im * i_data2_im;
 
-        // 2nd clk edge (data flow)
         prod1_rnd <= (prod1 + (1<<(F-1)));
         prod2_rnd <= (prod2 + (1<<(F-1)));
         prod3_rnd <= (prod3 + (1<<(F-1)));
         prod4_rnd <= (prod4 + (1<<(F-1)));
 
-        // 3rd clk edge (data flow)
-        o_data_re <= prod1_rnd[2*(I+F)-1-I:F] - prod4_rnd[2*(I+F)-1-I:F]; // ac - bd
-        o_data_im <= prod2_rnd[2*(I+F)-1-I:F] + prod3_rnd[2*(I+F)-1-I:F]; // ad + bc
+        o_data_re <= prod1_rnd[2*(I+F)-1-I:F] - prod4_rnd[2*(I+F)-1-I:F];
+        o_data_im <= prod2_rnd[2*(I+F)-1-I:F] + prod3_rnd[2*(I+F)-1-I:F];
     end
 end
 
