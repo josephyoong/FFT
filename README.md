@@ -1,1 +1,1 @@
-# Fast Fourier Transform on an ice40 FPGA 
+# Fast Fourier Transform on iCE40 FPGA 
